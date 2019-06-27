@@ -13,23 +13,21 @@ object KafKaDirectSample {
     val ssc = new StreamingContext(spark.sparkContext, Seconds(5))
 
     val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> "localhost:9092,anotherhost:9092",
+      "bootstrap.servers" -> "192.168.101.21:9092,192.168.101.22:9092,192.168.101.23:9092",
       "key.deserializer" -> classOf[StringDeserializer],
       "value.deserializer" -> classOf[StringDeserializer],
       "group.id" -> "use_a_separate_group_id_for_each_stream",
-      "auto.offset.reset" -> "latest",
+      "auto.offset.reset" -> "earliest",
       "fetch.message.max.bytes" -> "67108864",
       "enable.auto.commit" -> (false: java.lang.Boolean)
     )
 
-
-    val topics = Array("topicA", "topicB")
+    val topics = Array("zyk_topic_data")
 
     val kafkaDS = KafkaUtils.createDirectStream[String, String](ssc, PreferConsistent,
       Subscribe[String, String](topics, kafkaParams))
 
     kafkaDS.print()
-
 
     ssc.start()
     ssc.awaitTermination()
